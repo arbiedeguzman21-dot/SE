@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LRMRS – Laboratory Room Maintenance Request System</title>
+<style>
+:root{color-scheme:light;--bg:#f2f5f3;--card:#fff;--tx:#1f2a24;--mu:#5d6b63;--bd:#d9e2dc;--pr:#0b6e3a;--prd:#07502a;--prl:#e8f3ec;--prt:#fff;--gold:#f5b800;--gold-d:#c99700;--ac:#0b6e3a;--mg:#0b6e3a;--ok:#1b7f3b;--wa:#a86a00;--er:#c62828}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:15px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;flex-direction:column}
+header{position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.top{background:linear-gradient(180deg,#0d7a41,var(--pr) 55%,var(--prd));color:#fff;border-bottom:4px solid var(--gold);padding:10px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{width:58px;height:58px;border-radius:50%;background:#fff;padding:2px;flex:none;box-shadow:0 0 0 2px rgba(245,184,0,.9)}
+.id{display:flex;flex-direction:column;line-height:1.2;flex:1;min-width:230px}
+.id .rp{font-size:11px;letter-spacing:.4px;opacity:.9}
+.id b{font:700 19px Georgia,"Times New Roman",serif;letter-spacing:.8px}
+.id .loc{font-size:12px;color:#ffe08a}
+.sys{text-align:right;line-height:1.25}
+.sys b{display:block;font-size:14px}.sys span{font-size:12px;opacity:.9}
+nav{background:#fff;border-bottom:1px solid var(--bd);display:flex;gap:0;padding:0 12px;overflow-x:auto;white-space:nowrap}
+nav:empty{display:none}
+nav button{border:0;background:transparent;color:var(--tx);padding:12px 11px;font:600 13.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;border-bottom:3px solid transparent;transition:.15s}
+nav button:hover{color:var(--pr);background:var(--prl);border-bottom-color:var(--gold)}
+nav button.on{color:var(--pr);border-bottom-color:var(--pr);background:var(--prl)}
+.btn{border:1px solid var(--pr);background:#fff;color:var(--pr);padding:8px 16px;border-radius:6px;cursor:pointer;font:600 14px "Segoe UI",system-ui,sans-serif;transition:.15s}
+.btn:hover{background:var(--prl)}
+.btn.p{background:var(--pr);color:#fff}
+.btn.p:hover{background:var(--prd);box-shadow:0 2px 8px rgba(7,80,42,.35)}
+.btn.d{color:var(--er);border-color:var(--er)}
+.btn:focus-visible,nav button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+main{width:100%;max-width:1080px;margin:26px auto 40px;padding:0 16px;flex:1}
+.card{background:var(--card);border:1px solid var(--bd);border-top:3px solid var(--pr);border-radius:8px;padding:20px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+h2{margin:0 0 14px;font:700 19px Georgia,"Times New Roman",serif;color:var(--prd);padding-bottom:8px;border-bottom:1px solid var(--bd);position:relative}
+h2:after{content:"";position:absolute;left:0;bottom:-1px;width:56px;height:3px;background:var(--gold)}
+h3{margin:0 0 8px;font:700 13px "Segoe UI",system-ui,sans-serif;color:var(--pr);text-transform:uppercase;letter-spacing:.6px}
+label{display:block;font:600 13px "Segoe UI",system-ui,sans-serif;color:var(--mu);margin:13px 0 5px}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid #bfcdc5;border-radius:6px;background:#fff;color:var(--tx);font:15px "Segoe UI",system-ui,sans-serif;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(11,110,58,.18)}
+input::placeholder,textarea::placeholder{color:#93a399}
+input[type=file]{padding:7px;background:var(--bg)}
+textarea{min-height:90px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}.grid .card{margin-bottom:0}
+.card.stat{text-align:center;padding:16px 10px;border-top:3px solid var(--gold)}
+.stat b{display:block;font:700 34px Georgia,serif;color:var(--pr)}
+.stat span{color:var(--mu);font-size:12.5px;text-transform:uppercase;letter-spacing:.8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 9px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{background:var(--prl);color:var(--prd);font:700 12px "Segoe UI",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--pr)}
+td:first-child{font-weight:600;color:var(--pr)}
+.tw{overflow-x:auto}
+tr.click{cursor:pointer;transition:.12s}tr.click:hover{background:#f6faf7;box-shadow:inset 3px 0 0 var(--gold)}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font:600 12px "Segoe UI",system-ui,sans-serif;white-space:nowrap;background:#e8ecea;color:#38443d}
+.s-Pending{background:#fff1cf;color:#8a5a00}.s-Accepted{background:#dbeafe;color:#1e4fa0}.s-In-Progress{background:#ebe3ff;color:#4c2fa8}.s-For-Parts-Materials{background:#ffe5d2;color:#9a4300}.s-Resolved{background:#d9f2e2;color:#146c37}.s-Closed{background:#e4e8e6;color:#44504a}.s-Rejected{background:#fde0e0;color:#a32020}
+.p-Critical{background:#c62828;color:#fff}.p-High{background:#fde0e0;color:#a32020}.p-Medium{background:#fff1cf;color:#8a5a00}.p-Low{background:#d9f2e2;color:#146c37}
+.hero{text-align:center;margin:30px auto 18px;max-width:460px}
+.hero img{width:96px;height:96px;border-radius:50%;background:#fff;padding:3px;box-shadow:0 0 0 3px var(--gold),0 6px 18px rgba(7,80,42,.25)}
+.hero h1{font:700 22px Georgia,serif;color:var(--prd);margin:14px 0 4px}
+.hero p{margin:0;color:var(--mu);font-size:14px}
+.login{max-width:430px;margin:0 auto 20px}
+.login .row .btn{white-space:nowrap;padding:9px 8px;font-size:13.5px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.row>.btn{flex:0 0 auto}
+.mu{color:var(--mu);font-size:13px}.mu a{color:var(--pr);font-weight:600}
+.err{color:var(--er);font-size:13.5px;margin-top:8px;font-weight:600}
+dialog{border:0;border-top:4px solid var(--gold);border-radius:10px;background:#fff;color:var(--tx);max-width:640px;width:94%;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+dialog.wide{max-width:900px}
+dialog::backdrop{background:rgba(7,40,22,.55)}
+img.ph{max-width:100%;max-height:240px;border-radius:6px;border:1px solid var(--bd);margin-top:6px}
+.tl{border-left:3px solid var(--pr);margin:8px 0 0 6px;padding-left:14px}.tl div{margin-bottom:9px;font-size:13.5px}.tl b{color:var(--prd)}
+.bell{background:var(--er);color:#fff;border-radius:99px;padding:0 7px;font-size:11px;margin-left:6px}
+.bar{height:10px;background:#e4ece7;border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pr),#3fae6b);border-radius:6px}
+hr{border:0;border-top:1px solid var(--bd)!important}
+#warn:not(:empty){background:#fff4d6;color:#7a4d00;padding:9px 20px;font-size:13px;text-align:center;border-bottom:1px solid #e8c875}
+footer{background:var(--prd);color:#cfe6d8;border-top:4px solid var(--gold);padding:16px 24px;font-size:12.5px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+footer b{color:#fff}
+@media(max-width:640px){.sys{display:none}.top{padding:10px 14px}.id b{font-size:16px}.card{padding:16px}}
+@media print{body{background:#fff;font-family:Georgia,serif}header .sys,nav,.noprint,footer,#warn{display:none!important}header{position:static;box-shadow:none}.top{background:#fff;color:#000;border-bottom:3px double #0b6e3a;padding:0 0 8px}.id .loc,.id .rp{color:#000}.logo{box-shadow:none}.card{box-shadow:none;border:0;border-top:2px solid #0b6e3a;break-inside:avoid}.tag{border:1px solid #888;background:#fff!important;color:#000!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <img id="hlogo" class="logo" alt="Nueva Vizcaya State University seal">
+    <div class="id"><span class="rp">Republic of the Philippines</span><b>NUEVA VIZCAYA STATE UNIVERSITY</b><span class="loc">Bayombong, Nueva Vizcaya</span></div>
+    <div class="sys"><b>Laboratory Room Maintenance Request System</b><span>College of Information Technology Education</span></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+<div id="warn"></div>
+<main id="app"></main>
+<footer><div><b>Nueva Vizcaya State University</b> · College of Information Technology Education · Bayombong, Nueva Vizcaya</div><div>Laboratory Room Maintenance Request System (LRMRS) · © <span id="yr">2026</span></div></footer>
+<dialog id="dlg"></dialog>
+
+<script>
+const LOGO='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAABwCAMAAAAnm94cAAAB/lBMVEXb3lweJBlbZVCkIhptkl5aYyKSoy4oYR6yWVOfmWTYX2Hb4p6qUSXIGRTMWTBhjSff1i+bmZe7zsTelWbu3eOuy6PbnaGxzF17oIXboCjnvMM8YUJwMhq30zYugRx4eYTkfYK1PUz8/PwEWgUMSAwEZgX4+AyQp4/v6ecAAADw19EIcwjO18zy9iyXtJequKmzxbPuycfv5NmJmogtWCzqt7JTdVL4+NEOOw12lnRKaUhtiW3Z5NbVl5LPVlWImXHIJyvy9kzMaWvoqKY1ZDLRh4jsxLnMR0rPdnT4+a/Ky8SltpkrSCfNNjX092/2+JDYqqnml5OSpU/m6y6LmVK0Jiq0FxXW5jKsuEzIFhe4NjNOWDHZtq7Ix7fQ2TLnioyHo3PL1rYxOCizxzPFGiNLZTVYhFV7loW5WFW2aGrQfIHShXu3GiSquTXMOkTQZFplemWct6KyxknL1Ujc6OLmo5gIJQUuSBuYtkmlq6QoVhdISTC5eHSnqpfUpJfldXQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACfylDnAAAAgHRSTlP//////////////////////////////////////////////////////wD//////////////////////////////////////////////////////////////////////////////////////////////////////////////////7EQXN8AABPESURBVHjavVuHQxrL1kdAFHuLKffe9963Lpm5k2UrS98FQYoUBQTsLWrsmmZ6+dffmd1lQYyJvvfyTa4Gze785vQy5zqY/2BhjONv8X/y5t+Oe2Ntolg0ACv6UhG4340XR8EAS9fMDHwrRZXCb8UT/ggDEiyf8Z1lwyUF/za8tzHWROtYbDjK/SY8LnoTDugMB8TfgjcRvYEGeD7fDBsQfgNeIcDeIM36iy19/J/jcQfsDdLaQrwz4F3xNk1m+mZ+vNgS+p/iCTdk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';
+try{document.getElementById('hlogo').src=LOGO;document.getElementById('yr').textContent=new Date().getFullYear()}catch(e){}
+const ROOMS=["ITE 101","ITE 102","ITE 201","ITE 202","ITE 203","ITE 301","ITE 302","ITE 303","Faculty Room (1st Floor)","Faculty Room (2nd Floor)"];
+const CATS=["Computer","Network Equipment","Electrical","Air-Conditioning Unit","Projector","Lighting","Other"];
+const STAT=["Pending","Accepted","In Progress","For Parts/Materials","Resolved","Closed","Rejected"];
+const PRIO=["Low","Medium","High","Critical"];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cls=s=>s.replace(/[^A-Za-z]+/g,'-');
+const now=()=>new Date().toLocaleString();
+const tag=(t,p='s')=>`<span class="tag ${p}-${cls(t)}">${esc(t)}</span>`;
+
+let DB=null;
+let storeOK=true;
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}};
+try{localStorage.setItem('lrmrs_t','1');localStorage.removeItem('lrmrs_t')}catch(e){storeOK=false}
+try{DB=JSON.parse(ls.get('lrmrs'))}catch(e){}
+if(!DB)DB={seq:1,requests:[],notifs:[],users:[
+  ]};
+const save=()=>{if(!ls.set('lrmrs',JSON.stringify(DB))&&storeOK)alert('Browser storage is full. Try a smaller photo.')};
+let me=null,view='',filter={s:'',r:''};
+
+/* ---------- shell ---------- */
+function render(){
+  const nav=$('#nav');
+  if(!me){nav.innerHTML='';return loginView();}
+  const role=me.role;
+  const unread=DB.notifs.filter(n=>n.to===me.u&&!n.read).length;
+  const bell='Notifications'+(unread?`<span class="bell">${unread}</span>`:'');
+  const tabs=role==='staff'?[['dash','Dashboard'],['all','All Requests'],['hist','Room History'],['rep','Reports'],['acct','Accounts'],['req','Requirements'],['note',bell]]
+    :role==='mech'?[['jobs','My Jobs'],['hist','Room History'],['req','Requirements'],['note',bell]]
+    :[['new','New Request'],['mine','My Requests'],['req','Requirements'],['note',bell]];
+  if(!view||!tabs.some(t=>t[0]===view))view=tabs[0][0];
+  nav.innerHTML=tabs.map(t=>`<button class="${view===t[0]?'on':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('')+
+    (role!=='user'?`<button onclick="pwDlg('${esc(me.u)}')">Change password</button>`:'')+`<button onclick="logout()">Logout (${esc(me.u)})</button>`;
+  ({dash:dashView,all:allView,rep:repView,new:newView,mine:mineView,note:noteView,jobs:jobsView,hist:histView,acct:acctView,req:reqView})[view]();
+}
+const go=v=>{view=v;render()};
+const logout=()=>{me=null;view='';render()};
+
+/* ---------- login (UConnect NVSU + staff) ---------- */
+/* Hook for real UConnect authentication. NVSU does not publish a public login API,
+   so this prototype only identifies the user. To use the real thing, ask the NVSU ICT office
+   for an OAuth/SSO endpoint and replace this function with a call to it (never collect UConnect passwords here). */
+const UCONNECT_PORTAL='https://nvsu.edu.ph';
+async function uconnectVerify(id,kind){return {ok:true}}
+/* Employee accounts (admin + mechanics) have their own password, separate from UConnect.
+   Passwords are stored hashed. Change these demo passwords after the first login. */
+const SEED=[{u:'demo-staff',name:'Admin',role:'staff',pw:'admin123'},
+            {u:'demo-mech1',name:'Mech One',role:'mech',pw:'mech123'},
+            {u:'demo-mech2',name:'Mech Two',role:'mech',pw:'mech123'}];
+async function sha(t){
+  t='lrmrs:'+t;
+  try{if(globalThis.crypto&&crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}}catch(e){}
+  let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<t.length;i++){const c=t.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return 'f'+(4294967296*(2097151&h2)+(h1>>>0)).toString(16);
+}
+async function seedAccounts(){
+  for(const a of SEED){const h=await sha(a.pw),u=DB.users.find(x=>x.u===a.u&&x.role===a.role);
+    if(!u)DB.users.push({u:a.u,name:a.name,role:a.role,p:h,uconnect:true});
+    else if(!u.p)u.p=h}
+  save();
+}
+/* Forms are driven by button clicks + Enter, not native submit (sandboxed previews block form submission). */
+const guard=(f,fn)=>{if(!f.reportValidity())return;Promise.resolve().then(fn).catch(e=>{const m=document.querySelector('#msg');if(m)m.textContent='Error: '+e.message})};
+try{document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.form&&/^(INPUT|SELECT)$/.test(e.target.tagName)){const b=e.target.form.querySelector('button.p');if(b){e.preventDefault();b.click()}}})}catch(e){}
+let ltab='uc';
+function loginView(t){
+  if(t)ltab=t;
+  const tabs=`<div class="row" style="gap:6px;margin-bottom:6px"><button class="btn ${ltab==='uc'?'p':''}" style="flex:1" onclick="loginView('uc')">UConnect NVSU</button><button class="btn ${ltab==='st'?'p':''}" style="flex:1" onclick="loginView('st')">UConnect Employee</button></div>`;
+  const uc=`<h2>Sign in with UConnect</h2><p class="mu">For NVSU students and faculty. Enter your UConnect account ID.</p>
+  <form onsubmit="return false">
+  <label>UConnect username / student ID</label><input id="un" required autocomplete="username" placeholder="e.g., 2023-12345">
+  <label>Full name</label><input id="fn" required value="${esc(ls.get('lrmrs_last')||'')}">
+  <label>I am a</label><select id="rl"><option>Student</option><option>Faculty</option></select>
+  <div id="msg" class="err"></div><br>
+  <button type="button" class="btn p" style="width:100%" onclick="guard(this.form,doUC)">Continue with UConnect</button></form>
+  <p class="mu" style="margin-top:12px">Need your account? <a href="${UCONNECT_PORTAL}" target="_blank" rel="noopener" style="color:var(--pr)">Open the NVSU portal</a></p>
+  `;
+  const st=`<h2>Sign in with UConnect Employee</h2><p class="mu">For maintenance admins and mechanics.</p>
+  <form onsubmit="return false">
+  <label>Employee ID / username</label><input id="un" required autocomplete="username" placeholder="e.g., demo-mech1">
+  <label>Password</label><input id="pw" type="password" required autocomplete="current-password">
+  <div id="msg" class="err"></div><br>
+  <button type="button" class="btn p" style="width:100%" onclick="guard(this.form,doStaff)">Sign in</button></form>
+  <p class="mu" style="margin-top:12px">Demo accounts (change after first login):<br><b>demo-staff</b> / admin123 (admin)<br><b>demo-mech1</b>, <b>demo-mech2</b> / mech123 (mechanics)</p>`;
+  $('#app').innerHTML=`<div class="hero"><img src="${LOGO}" alt="NVSU seal"><h1>Laboratory Room Maintenance Request System</h1><p>College of Information Technology Education · ITE Building</p></div><div class="card login">${tabs}${ltab==='uc'?uc:st}<p class="mu" style="text-align:center;margin-top:14px"><a href="#" style="color:var(--pr)" onclick="reqDlg();return false">System requirements</a></p></div>`;
+}
+async function doUC(){
+  const id=$('#un').value.trim().toLowerCase(),role=$('#rl').value;let name=$('#fn').value.trim();
+  let v={ok:false};try{v=await uconnectVerify(id,'student')}catch(e){}
+  if(!v.ok){$('#msg').textContent='UConnect could not verify this account.';return false}
+  name=v.name||name;
+  let u=DB.users.find(x=>x.u===id&&x.role==='user');
+  if(!u){u={u:id,p:null,name,role:'user',type:role,uconnect:true};DB.users.push(u)}
+  else{u.name=name;u.type=role}
+  save();ls.set('lrmrs_last',name);
+  me=u;render();return false;
+}
+async function doStaff(){
+  const id=$('#un').value.trim().toLowerCase(),h=await sha($('#pw').value);$('#pw').value='';
+  const u=DB.users.find(x=>x.u===id&&x.role!=='user'&&x.p===h);
+  if(!u){$('#msg').textContent='Incorrect employee ID or password.';return false}
+  me=u;render();return false;
+}
+
+/* ---------- student ---------- */
+function newView(){
+  $('#app').innerHTML=`<div class="card"><h2>Submit a maintenance request</h2>
+  <form onsubmit="return false">
+  <div class="grid"><div><label>Room</label><select id="room">${ROOMS.map(r=>`<option>${r}</option>`).join('')}</select></div>
+  <div><label>Problem category</label><select id="cat">${CATS.map(r=>`<option>${r}</option>`).join('')}</select></div>
+  <div><label>How urgent is it?</label><select id="urg"><option>Low</option><option selected>Medium</option><option>High</option></select></div></div>
+  <label>Describe the problem</label><textarea id="desc" required placeholder="e.g., PC 12 will not turn on; the power light does not light up."></textarea>
+  <label>Photo evidence (optional)</label><input id="ph" type="file" accept="image/*" onchange="prev(this)">
+  <img id="pv" class="ph" style="display:none">
+  <br><button type="button" class="btn p" onclick="guard(this.form,submitReq)">Submit request</button></form></div>`;
+}
+let photoData='';
+function prev(inp){
+  photoData='';const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{
+    const k=Math.min(1,700/Math.max(im.width,im.height)),c=document.createElement('canvas');
+    c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    photoData=c.toDataURL('image/jpeg',.7);const pv=$('#pv');pv.src=photoData;pv.style.display='block'};im.src=r.result};
+  r.readAsDataURL(f);
+}
+function submitReq(){
+  const id='LR-'+String(DB.seq++).padStart(4,'0'),urg=$('#urg').value;
+  DB.requests.push({id,by:me.u,byName:me.name,room:$('#room').value,cat:$('#cat').value,urg,desc:$('#desc').value.trim(),
+    photo:photoData,date:now(),status:'Pending',prio:urg,log:[{d:now(),by:me.name,t:'Request submitted.'}],repair:null});
+  photoData='';save();alert('Request '+id+' submitted. Maintenance staff have been notified.');go('mine');return false;
+}
+function reqTable(list,staff,keep){
+  if(!list.length)return '<p class="mu">No requests found.</p>';
+  return `<div class="tw"><table><tr><th>ID</th><th>Room</th><th>Category</th>${staff?'<th>By</th><th>Mechanic</th>':''}<th>Priority</th><th>Status</th><th>Date</th></tr>
+  ${(keep?list:list.slice().reverse()).map(r=>`<tr class="click" onclick="detail('${r.id}')"><td>${r.id}</td><td>${esc(r.room)}</td><td>${esc(r.cat)}</td>${staff?`<td>${esc(r.byName)}</td><td>${r.assignedName?esc(r.assignedName):'<span class="mu">—</span>'}</td>`:''}<td>${tag(r.prio,'p')}</td><td>${tag(r.status)}</td><td class="mu">${esc(r.date)}</td></tr>`).join('')}</table></div>`;
+}
+function mineView(){
+  $('#app').innerHTML=`<div class="card"><h2>My requests</h2>${reqTable(DB.requests.filter(r=>r.by===me.u),false)}<p class="mu">Click a request to see its status history.</p></div>`;
+}
+function noteView(){
+  const l=DB.notifs.filter(n=>n.to===me.u).reverse();
+  $('#app').innerHTML=`<div class="card"><h2>Notifications</h2>${l.length?l.map(n=>`<div style="padding:8px 0;border-bottom:1px solid var(--bd)">${n.read?'':'<b>● </b>'}${esc(n.t)}<div class="mu">${esc(n.d)}</div></div>`).join(''):'<p class="mu">No notifications yet.</p>'}</div>`;
+  l.forEach(n=>n.read=true);save();
+  setTimeout(()=>{const b=document.querySelector('.bell');if(b)b.remove()},0);
+}
+
+/* ---------- detail modal ---------- */
+const mechOpts=sel=>DB.users.filter(x=>x.role==='mech').map(u=>`<option value="${esc(u.u)}" ${u.u===sel?'selected':''}>${esc(u.name+' ('+u.u+')')}</option>`).join('');
+let afterData='';
+function prevAfter(inp){
+  afterData='';const f=inp.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{const im=new Image();im.onload=()=>{
+    const k=Math.min(1,700/Math.max(im.width,im.height)),c=document.createElement('canvas');
+    c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    afterData=c.toDataURL('image/jpeg',.7);const pv=$('#pv2');pv.src=afterData;pv.style.display='block'};im.src=rd.result};
+  rd.readAsDataURL(f);
+}
+function detail(id){
+  const r=DB.requests.find(x=>x.id===id),admin=me.role==='staff',d=$('#dlg');
+  const canWork=me.role==='mech'&&r.assignedTo===me.u&&!['Closed','Rejected'].includes(r.status);
+  afterData='';
+  let h=`<h2>${r.id} · ${esc(r.room)}</h2>
+  <p>${tag(r.status)} ${tag(r.prio,'p')} <span class="mu">${esc(r.cat)} · by ${esc(r.byName)} · ${esc(r.date)}</span></p>
+  <p class="mu">Mechanic: ${r.assignedName?esc(r.assignedName):'Unassigned'}${r.startedAt?' · started '+esc(r.startedAt):''}${r.doneAt?' · done '+esc(r.doneAt):''}</p>
+  <p>${esc(r.desc)}</p>${r.photo?`<img class="ph" src="${r.photo}">`:''}
+  ${r.parts?`<p><b>Parts/materials needed:</b> ${esc(r.parts)}</p>`:''}
+  ${r.repair?`<h3 style="margin-top:12px">Repair record</h3><p class="mu">${esc(r.repair.action)} — ${esc(r.repair.tech)} (${esc(r.repair.date)})</p>`:''}
+  ${r.after?`<h3 style="margin-top:12px">After repair</h3><img class="ph" src="${r.after}">`:''}
+  <h3 style="margin-top:12px">Status history &amp; remarks</h3><div class="tl">${r.log.map(l=>`<div><b>${esc(l.d)}</b> · ${esc(l.by)}<br>${esc(l.t)}</div>`).join('')}</div>`;
+  if(admin)h+=`<hr style="margin:14px 0"><h3>Admin update</h3>
+  <div class="row"><div><label>Status</label><select id="ns">${STAT.map(s=>`<option ${s===r.status?'selected':''}>${s}</option>`).join('')}</select></div>
+  <div><label>Priority</label><select id="np">${PRIO.map(s=>`<option ${s===r.prio?'selected':''}>${s}</option>`).join('')}</select></div></div>
+  <label>Assign mechanic</label><select id="am"><option value="">— Unassigned —</option>${mechOpts(r.assignedTo)}</select>
+  <label>Remarks</label><textarea id="nr" style="min-height:60px"></textarea>`;
+  if(canWork){const opts=['In Progress','For Parts/Materials','Resolved'];h+=`<hr style="margin:14px 0"><h3>Mechanics room · log your work</h3>
+  <label>Status</label><select id="ms">${opts.map(s=>`<option ${s===(opts.includes(r.status)?r.status:'In Progress')?'selected':''}>${s}</option>`).join('')}</select>
+  <label>Work notes</label><textarea id="mn" style="min-height:60px"></textarea>
+  <label>Parts/materials needed (if any)</label><input id="mp" value="${esc(r.parts||'')}">
+  <label>Repair action taken (required to resolve)</label><input id="ma" value="${esc(r.repair?.action||'')}">
+  <label>After-repair photo (optional)</label><input type="file" accept="image/*" onchange="prevAfter(this)"><img id="pv2" class="ph" style="display:none">`}
+  h+=`<br><div class="row" style="justify-content:flex-end">${admin?`<button class="btn p" onclick="saveReq('${id}')">Save update</button>`:''}${canWork?`<button class="btn p" onclick="saveJob('${id}')">Save work</button>`:''}<button class="btn" onclick="$('#dlg').close()">Close</button></div>`;
+  d.innerHTML=h;d.showModal();
+}
+function notifyAdmins(t){DB.users.filter(x=>x.role==='staff').forEach(a=>DB.notifs.push({to:a.u,t,d:now(),read:false}))}
+function saveReq(id){
+  const r=DB.requests.find(x=>x.id===id),np=$('#np').value,rem=$('#nr').value.trim(),am=$('#am').value;let ns=$('#ns').value;
+  const ch=[];
+  if(am&&am!==(r.assignedTo||'')){
+    const u=DB.users.find(x=>x.u===am&&x.role==='mech');r.assignedTo=am;r.assignedName=u?u.name:am;
+    ch.push(`Assigned to mechanic ${r.assignedName}.`);if(ns==='Pending')ns='Accepted';
+    DB.notifs.push({to:am,t:`New job ${r.id} (${r.room}, ${r.cat}, ${np} priority) was assigned to you.`,d:now(),read:false});
+  }else if(!am&&r.assignedTo){r.assignedTo='';r.assignedName='';ch.push('Mechanic unassigned.')}
+  if(ns!==r.status)ch.push(`Status changed to ${ns}.`);
+  if(np!==r.prio)ch.push(`Priority set to ${np}.`);
+  if(rem)ch.push('Remarks: '+rem);
+  if(!ch.length){$('#dlg').close();return}
+  r.status=ns;r.prio=np;r.log.push({d:now(),by:me.name,t:ch.join(' ')});
+  DB.notifs.push({to:r.by,t:`${r.id} (${r.room}): ${ch.join(' ')}`,d:now(),read:false});
+  save();$('#dlg').close();render();
+}
+function saveJob(id){
+  const r=DB.requests.find(x=>x.id===id),ns=$('#ms').value,notes=$('#mn').value.trim(),parts=$('#mp').value.trim(),act=$('#ma').value.trim();
+  if(ns==='For Parts/Materials'&&!parts){alert('List the parts or materials needed.');return}
+  if(ns==='Resolved'&&!act){alert('Describe the repair action taken before resolving.');return}
+  const ch=[];
+  if(ns!==r.status){ch.push(`Status changed to ${ns}.`);if(ns==='In Progress'&&!r.startedAt){r.startedAt=now();ch.push('Work started.')}}
+  if(parts&&parts!==r.parts){r.parts=parts;ch.push('Parts/materials needed: '+parts+'.')}
+  if(notes)ch.push('Work notes: '+notes);
+  if(ns==='Resolved'){r.repair={action:act,tech:me.name,date:now()};r.doneAt=now();if(afterData)r.after=afterData;ch.push('Repair done: '+act+'.')}
+  if(!ch.length){$('#dlg').close();return}
+  r.status=ns;r.log.push({d:now(),by:me.name+' (mechanic)',t:ch.join(' ')});
+  const msg=`${r.id} (${r.room}): ${ch.join(' ')}`;
+  DB.notifs.push({to:r.by,t:msg,d:now(),read:false});notifyAdmins(msg);
+  afterData='';save();$('#dlg').close();render();
+}
+
+/* ---------- system requirements ---------- */
+const REQ_CLIENT=[
+['Processor','Dual-core, 1.5 GHz (Intel Celeron / Pentium or equivalent)','Quad-core, 2.0 GHz or higher (Intel Core i3 / AMD Ryzen 3 or newer)'],
+['RAM','2 GB','4 GB or more (8 GB for the admin workstation that handles reports and many tabs)'],
+['Storage','500 MB free (browser cache only)','2 GB free; SSD or HDD both work'],
+['Graphics','Integrated graphics','Integrated graphics (no dedicated GPU needed)'],
+['Display','1366 × 768, or any phone screen of 5 inches and up','1920 × 1080 for the admin and mechanics room; phones are fine for students and mechanics logging jobs'],
+['Operating system','Windows 10, Android 8, iOS 14, Ubuntu 20.04','Windows 11, Android 12+, iOS 16+, macOS 12+'],
+['Browser','A current Chrome, Edge, Firefox or Safari','Latest version of any of these'],
+['Internet','2 Mbps, stable','5–10 Mbps (photo uploads are slower on weak connections)']];
+const REQ_SERVER=[
+['Processor','2 vCPU','4 vCPU, 2.5 GHz or higher'],
+['RAM','2 GB','4–8 GB'],
+['Storage','20 GB SSD','60–100 GB SSD plus a separate backup drive or cloud backup'],
+['Graphics','None','None (no GPU needed)'],
+['Display','None (managed remotely)','None'],
+['Operating system','Ubuntu Server 22.04 LTS or Windows Server 2019','Ubuntu Server 24.04 LTS'],
+['Internet','10 Mbps up and down','50–100 Mbps, ideally on the campus network or wired, with HTTPS (SSL certificate)']];
+function reqBody(){
+  const t=rows=>`<div class="tw"><table><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr>${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table></div>`;
+  return `<h3>Client devices (students, faculty, mechanics, admin)</h3>${t(REQ_CLIENT)}
+  <h3 style="margin-top:18px">Server (campus or cloud, about 300–500 users)</h3>${t(REQ_SERVER)}
+  <h3 style="margin-top:18px">Notes</h3><div class="tl">
+  <div>The system is a lightweight web app, so client devices need very little. The server specs apply to the full version with a shared database (Node.js, Express, SQLite).</div>
+  <div>Photo evidence is the main storage cost, roughly 100–300 KB per request after compression. A few thousand requests a year need about 1 GB.</div>
+  <div>Back up the database and uploaded photos regularly, for example daily.</div>
+  <div>Make sure Wi-Fi reaches ITE 101 to 303 and both Faculty Rooms, since mechanics work inside the rooms.</div>
+  <div>These figures are recommended estimates for an app of this size, not benchmarks. Adjust them after testing with real users.</div></div>`;
+}
+function reqView(){$('#app').innerHTML=`<div class="card"><h2>System requirements</h2>${reqBody()}</div>`}
+function reqDlg(){
+  const d=$('#dlg');d.classList.add('wide');d.onclose=()=>d.classList.remove('wide');
+  d.innerHTML=`<h2>System requirements</h2>${reqBody()}<br><div class="row" style="justify-content:flex-end"><button class="btn" onclick="$('#dlg').close()">Close</button></div>`;
+  d.showModal();
+}
+
+/* ---------- accounts & passwords ---------- */
+function pwDlg(uid){
+  const self=uid===me.u;
+  $('#dlg').innerHTML=`<h2>${self?'Change password':'Reset password for '+esc(uid)}</h2>
+  <form onsubmit="return false">
+  ${self?'<label>Current password</label><input id="p0" type="password" required>':''}
+  <label>New password (at least 6 characters)</label><input id="p1" type="password" minlength="6" required>
+  <label>Confirm new password</label><input id="p2" type="password" required>
+  <div id="pm" class="err"></div><br><div class="row" style="justify-content:flex-end"><button type="button" class="btn p" onclick="guard(this.form,()=>savePw('${esc(uid)}'))">Save</button><button type="button" class="btn" onclick="$('#dlg').close()">Cancel</button></div></form>`;
+  $('#dlg').showModal();
+}
+async function savePw(uid){
+  const u=DB.users.find(x=>x.u===uid&&x.role!=='user'),p1=$('#p1').value;
+  if(!u||(me.role!=='staff'&&uid!==me.u))return;
+  if(p1.length<6){$('#pm').textContent='Use at least 6 characters.';return}
+  if(p1!==$('#p2').value){$('#pm').textContent='Passwords do not match.';return}
+  if(uid===me.u&&u.p!==await sha($('#p0').value)){$('#pm').textContent='Current password is incorrect.';return}
+  u.p=await sha(p1);save();$('#dlg').close();alert('Password updated.');
+}
+function acctView(){
+  const emp=DB.users.filter(x=>x.role!=='user');
+  $('#app').innerHTML=`<div class="card"><h2>Employee accounts</h2><div class="tw"><table><tr><th>ID</th><th>Name</th><th>Role</th><th></th></tr>
+  ${emp.map(u=>`<tr><td>${esc(u.u)}</td><td>${esc(u.name)}</td><td>${u.role==='staff'?'Admin':'Mechanic'}</td><td><button class="btn" onclick="pwDlg('${esc(u.u)}')">Reset password</button></td></tr>`).join('')}</table></div></div>
+  <div class="card"><h2>Add an account</h2><form onsubmit="return false">
+  <div class="grid"><div><label>Employee ID / username</label><input id="ai" required placeholder="letters, numbers, - . _"></div>
+  <div><label>Full name</label><input id="an" required></div>
+  <div><label>Role</label><select id="ar"><option value="mech">Mechanic</option><option value="staff">Admin</option></select></div>
+  <div><label>Temporary password</label><input id="ap" type="text" required minlength="6"></div></div>
+  <div id="am2" class="err"></div><br><button type="button" class="btn p" onclick="guard(this.form,addAcct)">Create account</button></form></div>`;
+}
+async function addAcct(){
+  const id=$('#ai').value.trim().toLowerCase(),name=$('#an').value.trim(),pw=$('#ap').value;
+  if(!/^[a-z0-9._-]+$/.test(id)){$('#am2').textContent='ID may only use letters, numbers, - . _';return}
+  if(pw.length<6){$('#am2').textContent='Password needs at least 6 characters.';return}
+  if(DB.users.some(x=>x.u===id&&x.role!=='user')){$('#am2').textContent='That ID already exists.';return}
+  DB.users.push({u:id,name,role:$('#ar').value,p:await sha(pw),uconnect:true});save();acctView();
+}
+
+/* ---------- mechanics room ---------- */
+let jf={r:'',p:''},hr_='';
+function jobsView(){
+  const mine=DB.requests.filter(r=>r.assignedTo===me.u),closed=['Resolved','Closed','Rejected'];
+  const act=mine.filter(r=>!closed.includes(r.status)),done=mine.filter(r=>['Resolved','Closed'].includes(r.status));
+  const c=s=>mine.filter(r=>r.status===s).length;
+  const list=act.filter(r=>(!jf.r||r.room===jf.r)&&(!jf.p||r.prio===jf.p)).sort((a,b)=>PRIO.indexOf(b.prio)-PRIO.indexOf(a.prio));
+  $('#app').innerHTML=`<div class="grid">${[['Active jobs',act.length],['In progress',c('In Progress')],['Waiting for parts',c('For Parts/Materials')],['Completed',done.length]].map(x=>`<div class="card stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('')}</div>
+  <div class="card"><h2>Mechanics room · my jobs</h2><div class="row">
+  <select onchange="jf.r=this.value;jobsView()"><option value="">All rooms</option>${ROOMS.map(s=>`<option ${jf.r===s?'selected':''}>${s}</option>`).join('')}</select>
+  <select onchange="jf.p=this.value;jobsView()"><option value="">All priorities</option>${PRIO.map(s=>`<option ${jf.p===s?'selected':''}>${s}</option>`).join('')}</select></div><br>
+  ${reqTable(list,true,true)}<p class="mu">Highest priority first. Click a job to log work, request parts or mark it resolved.</p></div>
+  <div class="card"><h2>Completed by me</h2>${reqTable(done,true)}</div>`;
+}
+function histView(){
+  const R=DB.requests.filter(r=>r.repair&&(!hr_||r.room===hr_));
+  const cnt=ROOMS.map(x=>[x,DB.requests.filter(r=>r.room===x).length]),mx=Math.max(1,...cnt.map(x=>x[1]));
+  $('#app').innerHTML=`<div class="card"><h2>Repair history by room</h2>
+  <select onchange="hr_=this.value;histView()"><option value="">All rooms</option>${ROOMS.map(s=>`<option ${hr_===s?'selected':''}>${s}</option>`).join('')}</select><br><br>
+  ${R.length?`<div class="tw"><table><tr><th>ID</th><th>Room</th><th>Problem</th><th>Repair action</th><th>Mechanic</th><th>Date</th></tr>${R.slice().reverse().map(r=>`<tr class="click" onclick="detail('${r.id}')"><td>${r.id}</td><td>${esc(r.room)}</td><td>${esc(r.cat)}: ${esc(r.desc.slice(0,40))}</td><td>${esc(r.repair.action)}</td><td>${esc(r.repair.tech)}</td><td class="mu">${esc(r.repair.date)}</td></tr>`).join('')}</table></div>`:'<p class="mu">No completed repairs recorded yet.</p>'}</div>
+  <div class="card"><h2>Requests per room</h2>${cnt.map(x=>`<div style="margin:8px 0"><div class="row" style="gap:0"><span>${esc(x[0])}</span><span style="flex:0">${x[1]}</span></div><div class="bar"><i style="width:${x[1]/mx*100}%"></i></div></div>`).join('')}</div>`;
+}
+
+/* ---------- staff ---------- */
+function dashView(){
+  const R=DB.requests,c=s=>R.filter(r=>r.status===s).length;
+  const urgent=R.filter(r=>['High','Critical'].includes(r.prio)&&!['Resolved','Closed','Rejected'].includes(r.status));
+  $('#app').innerHTML=`<div class="grid">${[['Total',R.length],['Pending',c('Pending')],['In Progress',c('In Progress')+c('Accepted')],['Resolved',c('Resolved')+c('Closed')],['Unassigned',R.filter(r=>!r.assignedTo&&!['Resolved','Closed','Rejected'].includes(r.status)).length]].map(x=>`<div class="card stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join('')}</div>
+  <div class="card"><h2>Open high-priority requests</h2>${reqTable(urgent,true)}</div>
+  <div class="card"><h2>Newest requests</h2>${reqTable(R.slice(-5),true)}</div>`;
+}
+function allView(){
+  let l=DB.requests.filter(r=>(!filter.s||r.status===filter.s)&&(!filter.r||r.room===filter.r));
+  $('#app').innerHTML=`<div class="card"><h2>All requests</h2><div class="row">
+  <select onchange="filter.s=this.value;allView()"><option value="">All statuses</option>${STAT.map(s=>`<option ${filter.s===s?'selected':''}>${s}</option>`).join('')}</select>
+  <select onchange="filter.r=this.value;allView()"><option value="">All rooms</option>${ROOMS.map(s=>`<option ${filter.r===s?'selected':''}>${s}</option>`).join('')}</select></div><br>${reqTable(l,true)}</div>`;
+}
+function repView(){
+  const R=DB.requests,grp=(k,keys)=>keys.map(x=>{const n=R.filter(r=>r[k]===x).length;return `<div style="margin:8px 0"><div class="row" style="gap:0"><span>${esc(x)}</span><span style="flex:0">${n}</span></div><div class="bar"><i style="width:${R.length?n/R.length*100:0}%"></i></div></div>`}).join('');
+  const done=R.filter(r=>r.repair);
+  $('#app').innerHTML=`<div class="row noprint" style="margin-bottom:12px"><span></span><button class="btn" onclick="csv()">Export CSV</button><button class="btn p" onclick="print()">Print report</button></div>
+  <div class="card"><h2>Maintenance summary report</h2><p class="mu">Generated ${esc(now())} · ${R.length} total request(s)</p>
+  <div class="grid"><div><h3>By status</h3>${grp('status',STAT)}</div><div><h3>By room</h3>${grp('room',ROOMS)}</div><div><h3>By category</h3>${grp('cat',CATS)}</div></div>
+  <h3 style="margin-top:16px">By mechanic</h3>${(()=>{const mn=[...new Set(R.filter(r=>r.assignedName).map(r=>r.assignedName))];return mn.length?`<div class="tw"><table><tr><th>Mechanic</th><th>Assigned</th><th>Resolved</th></tr>${mn.map(m=>`<tr><td>${esc(m)}</td><td>${R.filter(r=>r.assignedName===m).length}</td><td>${R.filter(r=>r.assignedName===m&&['Resolved','Closed'].includes(r.status)).length}</td></tr>`).join('')}</table></div>`:'<p class="mu">No jobs assigned yet.</p>'})()}</div>
+  <div class="card"><h2>Maintenance history</h2>${done.length?`<div class="tw"><table><tr><th>ID</th><th>Room</th><th>Category</th><th>Repair action</th><th>Technician</th><th>Date</th></tr>${done.map(r=>`<tr><td>${r.id}</td><td>${esc(r.room)}</td><td>${esc(r.cat)}</td><td>${esc(r.repair.action)}</td><td>${esc(r.repair.tech)}</td><td class="mu">${esc(r.repair.date)}</td></tr>`).join('')}</table></div>`:'<p class="mu">No completed repairs recorded yet.</p>'}</div>`;
+}
+function csv(){
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const rows=[['ID','Date','Room','Category','Requested by','Priority','Status','Description','Assigned mechanic','Repair action','Technician']]
+   .concat(DB.requests.map(r=>[r.id,r.date,r.room,r.cat,r.byName,r.prio,r.status,r.desc,r.assignedName,r.repair?.action,r.repair?.tech]));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(q).join(',')).join('\n')],{type:'text/csv'}));
+  a.download='lrmrs-report.csv';a.click();
+}
+seedAccounts().catch(()=>{}).then(render);
+try{if(!storeOK)document.getElementById('warn').textContent='Browser storage is blocked in this view. You can sign in, but data will be lost when you close the page. Open the file directly in Chrome, Edge or Firefox.'}catch(e){}
+</script>
+</body>
+</html>
